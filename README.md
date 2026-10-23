@@ -66,6 +66,18 @@ Commandes disponibles :
 
 Le serveur expose également `GET /health` pour vérifier son état.
 
+## Utilisation en ligne
+
+Le serveur est disponible sur Render. Après avoir installé les dépendances, lancez simplement :
+
+```bash
+python3 client.py --url wss://cipherchat-cli.onrender.com/ws
+```
+
+Choisissez un pseudo et utilisez la même phrase secrète que les autres participants. Il n’y a **aucune interface Web** : le `404` sur `https://cipherchat-cli.onrender.com/` est normal.
+
+État du serveur : https://cipherchat-cli.onrender.com/health
+
 ## Déploiement Render
 
 **Build Command :**
@@ -87,13 +99,21 @@ CIPHERCHAT_SALT_B64=<sel-base64-stable-d-au-moins-16-octets>
 CIPHERCHAT_MAX_CONNECTIONS=100
 ```
 
-En production, le sel explicite est obligatoire et ne doit jamais être régénéré au démarrage. Après déploiement, connectez le client avec l’URL WSS :
+En production, le sel explicite est obligatoire et ne doit jamais être régénéré au démarrage.
+
+### Mise en veille après inactivité
+
+Sur l’offre gratuite, Render peut mettre le serveur en veille après une période sans trafic. La requête suivante le réveille, mais le démarrage peut prendre du temps et une première tentative du client peut échouer.
+
+Si le service était inactif, réveillez-le d’abord avec :
 
 ```bash
-python3 client.py --url wss://VOTRE-SERVICE.onrender.com/ws
+curl https://cipherchat-cli.onrender.com/health
 ```
 
-Un service gratuit peut se mettre en veille ou redémarrer. Une surveillance de `/health`, par exemple avec UptimeRobot, ne garantit pas une disponibilité continue.
+Attendez la réponse `{"status":"ok"}` avant de lancer le client WSS.
+
+Pour limiter les périodes sans trafic, configurez manuellement dans UptimeRobot un moniteur **HTTP(S)** vers `https://cipherchat-cli.onrender.com/health`, avec un intervalle de **5 minutes** si votre offre le permet. Cette surveillance ne garantit pas une disponibilité continue : Render peut toujours mettre en veille ou redémarrer le service.
 
 ## Tests
 
@@ -105,7 +125,8 @@ python -m pytest -q
 
 - Dépôt de cette version CLI : **à renseigner après publication**.
 - Version GUI : https://github.com/GedeonTch/CipherChat
-- Service Render : **à renseigner après déploiement vérifié**.
+- Service Render : https://cipherchat-cli.onrender.com
+- Santé du serveur : https://cipherchat-cli.onrender.com/health
 
 ---
 
