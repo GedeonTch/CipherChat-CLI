@@ -1,0 +1,20 @@
+# Secrets et configuration locale
+.env
+.env.*
+!.env.example
+
+# Environnements Python
+.venv/
+venv/
+
+# Fichiers générés
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Système
+.DS_Store
